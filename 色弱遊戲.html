@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0px;
+            background-color: gray;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #container {
+            width: 525px;
+            height: 525px;
+            background-color: white;
+            border-radius: 15px;
+            flex-wrap: wrap;
+            padding: 10px;
+            gap: 15px;
+            display: none;
+        }
+
+        #container.act {
+            display: flex;
+        }
+
+        .box {
+            background-color: pink;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .score {
+            position: absolute;
+            top: 0;
+            left: calc (50% -50px);
+            width: 100px;
+            height: 100px;
+            background-color: orange;
+            border-radius: 15px;
+            text-align: center;
+            line-height: 100px;
+            font-size: 72px;
+            display: none;
+        }
+
+        .score.act {
+            display: block;
+        }
+
+        #count_up_timer {
+            font-size: 100px;
+            font-weight: bold;
+            color: darkblue;
+            position: absolute;
+            top: 0px;
+            left: 100px;
+        }
+
+        #stop_count_up_timer {
+            background-color: black;
+            color: white;
+            position: absolute;
+            top: 100px;
+            left: 150px;
+            font-size: 50px;
+
+        }
+
+        #start {
+            position: absolute;
+            bottom: 400px;
+            left: 700px;
+            font-size: 50px;
+            border-radius: 15px;
+            background-color: aqua;
+            border: none;
+            width: 500px;
+        }
+
+        #reset {
+            position: absolute;
+            bottom: 80px;
+            left: 800px;
+            font-size: 50px;
+            border-radius: 15px;
+            background-color: aqua;
+            border: none;
+            display: none;
+        }
+
+        #reset.act {
+            display: block;
+        }
+
+        .time {
+            font-size: 60px;
+            border: 1px solid blue;
+            display: inline-block;
+            background-color: pink;
+
+            border-radius: 10px;
+            display: none;
+        }
+
+        .time.act {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="score">0</div>
+    <div id="container">
+
+    </div>
+    <button id="start" onclick="start()">開始</button>
+    <button id="reset" onclick="resets()">重新開始</button>
+    <div class="time">60</div>
+    <script>
+
+        let container = document.querySelector('#container');
+        let scoreContent = document.querySelector('.score');
+        let startBtn = document.querySelector('#start');
+        let resetBtn = document.querySelector('#reset')
+        let score = 0;
+        let level = 1;
+        let colorUp = 0.3;
+
+        function resets() {
+            score = 0;
+            level = 1;
+            colorUp = 0.3;
+            time = 60;
+
+            
+            reset()
+        }
+
+        function getCSS(level) {
+            let levelform = level - 1;
+            let mole = 485 - 15 * levelform;
+            let deno = 2 + levelform;
+            return mole / deno;
+        }
+        // 重製色塊
+
+        function reset() {
+            scoreContent.innerHTML = score++;
+
+            let side = getCSS(level);
+
+
+            // 清空boxes
+            container.innerHTML = '';
+            let randomColorR = Math.floor(Math.random() * 256);
+            let randomColorG = Math.floor(Math.random() * 256);
+            let randomColorB = Math.floor(Math.random() * 256);
+            // 骰色子 取得0-3亂數
+            let randomNumber = Math.floor(Math.random() * (level + 1) * (level + 1))
+            // 撈出我們四個BOX
+            for (let i = 0; i < (level + 1) * (level + 1); i++) {
+                if (i == randomNumber) {
+                    container.innerHTML += `<div class="box answer" style="width:${side}px;height:${side}px;background-color: rgba(${randomColorR},${randomColorG},${randomColorB});opacity:${colorUp};" onclick="reset()"></div>`;
+                } else {
+                    container.innerHTML += `<div class="box" style="width:${side}px;height:${side}px;background-color: rgba(${randomColorR},${randomColorG},${randomColorB});" onclick="alert('按錯會爆炸喔')"></div>`;
+                }
+
+            }
+            if (score % 3 == 0) {
+                if (level < 8) {
+                    level++
+                    colorUp += 0.1
+                }
+            }
+
+        }
+
+        let timeBoard = document.querySelector('.time');
+
+        var time = 60;
+
+        function start() {
+            container.classList.add('act');
+            scoreContent.classList.add('act');
+            resetBtn.classList.add('act');
+            timeBoard.classList.add('act');
+            startBtn.style.display = 'none';
+            let timer = setInterval(function () {
+                time--;
+
+                timeBoard.innerHTML = time;
+                if (time <= 0) {
+                    clearInterval(timer);
+                    alert('時間到囉!')
+                    alert('您總共得到'+scoreContent.innerHTML+'分')
+                }
+            }, 1000);
+
+            
+        }
+
+        reset();
+
+    </script>
+</body>
+
+</html>
